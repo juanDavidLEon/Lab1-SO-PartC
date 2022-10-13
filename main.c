@@ -167,7 +167,7 @@ void contextAndProcess() {
   int n = 0;
   char palabra[TAMCAD];
 
-  while(!feof(fp)){
+  while (!feof(fp)) {
     fscanf(fp, "%s", palabra);
     n++;
   }
@@ -176,9 +176,9 @@ void contextAndProcess() {
   rewind(fp);
 
   char palabras[n][TAMCAD];
-  int i=0;
+  int i = 0;
 
-  while(!feof(fp)){
+  while (!feof(fp)) {
 
     fscanf(fp, "%s", palabras[i]);
     i++;
@@ -186,19 +186,18 @@ void contextAndProcess() {
 
   printf("las palabras son\n");
 
-  for(i=0;i<n;i++){
+  for (i = 0; i < n; i++) {
 
-    if(!strcmp(palabras[i], "ctxt")){
-    //printf("ctxt\n");
-    //printf("%d\n", i);
-    printf("%s\n", palabras[2149]);
-  }
+    if (!strcmp(palabras[i], "ctxt")) {
+      // printf("ctxt\n");
+      // printf("%d\n", i);
+      printf("%s: ", palabras[2149]); printf("%s", palabras[2150]);
+    }
 
-  }   //printf("%s\n", palabras[i]);
+  } // printf("%s\n", palabras[i]);
 
   printf("\n");
   fclose(fp);
-
 }
 
 void imprimirFormato(int seconds) {
