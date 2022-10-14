@@ -10,7 +10,8 @@ void leerUserStat();
 void versionKernel();
 void modelAndType();
 void diskStat();
-void contextAndProcess();
+void context();
+void process();
 void imprimirFormato(int segundos);
 
 int main() {
@@ -18,9 +19,11 @@ int main() {
   modelAndType();
   versionKernel();
   leerUpTime();
-  contextAndProcess();
-  // diskStat();
-  // leerUserStat();
+  leerUserStat();
+  diskStat();
+  context();
+  leerUpTime();
+  process();
 
   return 0;
 }
@@ -69,6 +72,7 @@ void leerUserStat() {
       imprimirFormato(system * 100);
       printf("\nidle: ");
       imprimirFormato(idle * 100);
+      printf("\n");
 
       fclose(textfile);
       break;
@@ -114,87 +118,106 @@ void modelAndType() {
   fclose(textfile);
 }
 
+
 void diskStat() {
-  FILE *textfile;
-  char line[MAX_LINE_LENGTH];
-  int reads, writes, major, min, device, x1, x2, x3, x4, x5, x6, x7, x8, x9,
-      x10, x11, x12, x13, x14, x15, x16, x17, y1, y2, y3, y4, y5, y6, y7, y8,
-      y9, y10, y11, y12, y13, y14, y15, y16, y17, z1, z2, z3, z4, z5, z6, z7,
-      z8, z9, z10, z11, z12, z13, z14, z15, z16, z17, p1, p2, p3, p4, p5, p6,
-      p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, b1, b2, b3, b4, b5,
-      b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, d1, d2, d3, d4,
-      d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, t1, t2, t3,
-      t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, m1, m2,
-      m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17, r5,
-      r6, r7;
-
-  textfile = fopen("/proc/diskstats", "r");
-  if (textfile == NULL)
-    return;
-
-  fscanf(
-      textfile,
-      "   7       0 loop0 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    7       1 loop1 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n "
-      "   7       2 loop2 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    7       3 loop3 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    7       4 loop4 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    7       5 loop5 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    7       6 loop6 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    7       7 loop7 %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d\n    8       0 sda %d %d %d %d %d %d %d %d",
-      &x1, &x2, &x3, &x4, &x5, &x6, &x7, &x8, &x9, &x10, &x11, &x12, &x13, &x14,
-      &x15, &x16, &x17, &y1, &y2, &y3, &y4, &y5, &y6, &y7, &y8, &y9, &y10, &y11,
-      &y12, &y13, &y14, &y15, &y16, &y17, &z1, &z2, &z3, &z4, &z5, &z6, &z7,
-      &z8, &z9, &z10, &z11, &z12, &z13, &z14, &z15, &z16, &z17, &p1, &p2, &p3,
-      &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14, &p15, &p16,
-      &p17, &b1, &b2, &b3, &b4, &b5, &b6, &b7, &b8, &b9, &b10, &b11, &b12, &b13,
-      &b14, &b15, &b16, &b17, &d1, &d2, &d3, &d4, &d5, &d6, &d7, &d8, &d9, &d10,
-      &d11, &d12, &d13, &d14, &d15, &d16, &d17, &t1, &t2, &t3, &t4, &t5, &t6,
-      &t7, &t8, &t9, &t10, &t11, &t12, &t13, &t14, &t15, &t16, &t17, &m1, &m2,
-      &m3, &m4, &m5, &m6, &m7, &m8, &m9, &m10, &m11, &m12, &m13, &m14, &m15,
-      &m16, &m17, &major, &min, &device, &reads, &r5, &r6, &r7, &writes);
-
-  printf("\nNúmero de peticiones a disco realizadas : %d %d \n", reads, writes);
-
-  fclose(textfile);
-}
-
-void contextAndProcess() {
-  FILE *fp = fopen("/proc/stat", "r");
-
+  FILE *fp = fopen("/proc/diskstats", "r");
   int n = 0;
-  char palabra[TAMCAD];
+  char lineasDisk[TAMCAD];
 
+  // Para hallar el numero de lineas de un archivo
   while (!feof(fp)) {
-    fscanf(fp, "%s", palabra);
+    fscanf(fp, "%s", lineasDisk);
     n++;
   }
-  printf("numero es de lineas es: %d\n", n);
+  //printf("El numero de lineas que tiene el archivo es de: %d\n", n);
 
-  rewind(fp);
+  rewind(fp); // Para volver al inicio del archivo
+
+  char palabrasDisk[n][TAMCAD];
+  int i = 0;
+
+  // Para almecenar las lineas del archivo en un arreglo de caracteres llamado
+  // palabrasDisk
+  while (!feof(fp)) {
+    fscanf(fp, "%s", palabrasDisk[i]);
+    i++;
+  }
+
+  // Recorre el arreglo de caracteres
+   for (i = 0; i < n; i++) {
+
+    // Condicion para imprimir las lecturas completadas con éxito en el disco
+    if (!strcmp(palabrasDisk[i], "sda")) {
+      //printf("%d\n", i); //Indice de la palabra
+      printf("Numero de peticiones a disco realizadas:\n");
+      printf("Lectura: ");
+      printf("%s", palabrasDisk[i + 4]);
+      printf("\n");
+    }
+  }
+
+  // Recorre el arreglo de caracteres
+   for (i = 0; i < n; i++) {
+
+    // Condicion para imprimir las escrituras completadas
+    if (!strcmp(palabrasDisk[i], "sda")) {
+      //printf("%d\n", i); //Indice de la palabra
+      printf("Escritura: ");
+      printf("%s", palabrasDisk[i + 8]);
+    }
+  }
+
+  printf("\n");
+  fclose(fp);
+}
+
+
+void context() {
+  FILE *fp = fopen("/proc/stat", "r");
+  int n = 0;
+  char lineas[TAMCAD];
+
+  // Para hallar el numero de lineas de un archivo
+  while (!feof(fp)) {
+    fscanf(fp, "%s", lineas);
+    n++;
+  }
+  // printf("El numero de lineas que tiene el archivo es de: %d\n", n);
+
+  rewind(fp); // Para volver al inicio del archivo
 
   char palabras[n][TAMCAD];
   int i = 0;
 
+  // Para almecenar las lineas del archivo en un arreglo de caracteres llamado
+  // palabras
   while (!feof(fp)) {
-
     fscanf(fp, "%s", palabras[i]);
     i++;
   }
 
-  printf("las palabras son\n");
-
+  // Recorre el arreglo de caracteres
   for (i = 0; i < n; i++) {
 
+    // Condicion para imprimir ctxt del archivo
     if (!strcmp(palabras[i], "ctxt")) {
-      // printf("ctxt\n");
-      // printf("%d\n", i);
-      printf("%s: ", palabras[2149]); printf("%s", palabras[2150]);
+      // printf("%d\n", i); //Indice de la palabra
+      printf("%s: ", palabras[i]);
+      printf("%s", palabras[i + 1]);
+      printf("\n");
     }
+  }
 
-  } // printf("%s\n", palabras[i]);
+  // Recorre el arreglo de caracteres
+  for (i = 0; i < n; i++) {
+
+    // Condicion para imprimir processes del archivo
+    if (!strcmp(palabras[i], "processes")) {
+      // printf("%d\n", i);  //Indice de la palabra
+      printf("%s: ", palabras[i]);
+      printf("%s", palabras[i + 1]);
+    }
+  }
 
   printf("\n");
   fclose(fp);
