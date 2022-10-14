@@ -23,7 +23,7 @@ int main() {
   diskStat();
   context();
   leerUpTime();
-  process();
+  //process();
 
   return 0;
 }
