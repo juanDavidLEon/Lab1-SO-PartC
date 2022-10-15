@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#define TAMCAD 500
+#define TAMCAD 100
 
 #define MAX_LINE_LENGTH 1000
 
@@ -23,7 +23,7 @@ int main() {
   diskStat();
   context();
   leerUpTime();
-  //process();
+  process();
 
   return 0;
 }
@@ -44,6 +44,7 @@ void leerUpTime() {
 
   fclose(textfile);
 }
+
 
 void leerUserStat() {
   FILE *textfile;
@@ -81,6 +82,7 @@ void leerUserStat() {
   } while (strcmp(command, "-s"));
 }
 
+
 void versionKernel() {
   FILE *textfile;
   char line[MAX_LINE_LENGTH];
@@ -96,26 +98,57 @@ void versionKernel() {
   fclose(textfile);
 }
 
+
 void modelAndType() {
-  FILE *textfile;
-  char line[MAX_LINE_LENGTH];
-  char vendor[30];
-  char business[20];
-  char core[20];
-  char processorNumber[20];
+  FILE *fp = fopen("/proc/cpuinfo", "r");
+  int n = 0;
+  char lineascpu[TAMCAD];
 
-  textfile = fopen("/proc/cpuinfo", "r");
-  if (textfile == NULL)
-    return;
+  // Para hallar el numero de lineas de un archivo
+  while (!feof(fp)) {
+    fscanf(fp, "%s", lineascpu);
+    n++;
+  }
+  //printf("El numero de lineas que tiene el archivo es de: %d\n", n);
 
-  fscanf(textfile,
-         "processor	: 0\n vendor_id	: %s\n cpu family	: 6\n model : "
-         "94\n model name	: %s %s %s\n",
-         vendor, business, core, processorNumber);
-  printf("\nType: %s \nmodel: %s %s %s", vendor, business, core,
-         processorNumber);
+  rewind(fp); // Para volver al inicio del archivo
 
-  fclose(textfile);
+  char palabrasModelType[n][TAMCAD];
+  int i = 0;
+
+  // Para almecenar las lineas del archivo en un arreglo de caracteres llamado
+  // palabrasModelType
+  while (!feof(fp)) {
+    fscanf(fp, "%s", palabrasModelType[i]);
+    i++;
+  }
+
+  // Recorre el arreglo de caracteres
+   for (i = 0; i < n; i++) {
+
+    // Condicion para imprimir el modelo del cpu
+    if(!strcmp(palabrasModelType[i], "vendor_id")){
+      //printf("%d\n", i);
+      printf("Type: ");
+      printf("%s\n", palabrasModelType[i + 2]);
+      break;
+      }
+   }
+
+    for (i = 0; i < n; i++) {
+
+    // Condicion para imprimir el modelo del cpu
+    if(!strcmp(palabrasModelType[i], "name")){
+      //printf("%d\n", i);
+      printf("Cpu model: ");
+      printf("%s ", palabrasModelType[i + 2]);
+      printf("%s ", palabrasModelType[i + 3]);
+      printf("%s", palabrasModelType[i + 4]);
+      break;
+      }
+   }
+
+  fclose(fp);
 }
 
 
@@ -208,6 +241,34 @@ void context() {
     }
   }
 
+  fclose(fp);
+}
+
+
+void process(){
+    FILE *fp = fopen("/proc/stat", "r");
+  int n = 0;
+  char lineas[TAMCAD];
+
+  // Para hallar el numero de lineas de un archivo
+  while (!feof(fp)) {
+    fscanf(fp, "%s", lineas);
+    n++;
+  }
+  // printf("El numero de lineas que tiene el archivo es de: %d\n", n);
+
+  rewind(fp); // Para volver al inicio del archivo
+
+  char palabras[n][TAMCAD];
+  int i = 0;
+
+  // Para almecenar las lineas del archivo en un arreglo de caracteres llamado
+  // palabras
+  while (!feof(fp)) {
+    fscanf(fp, "%s", palabras[i]);
+    i++;
+  }
+
   // Recorre el arreglo de caracteres
   for (i = 0; i < n; i++) {
 
@@ -222,6 +283,7 @@ void context() {
   printf("\n");
   fclose(fp);
 }
+
 
 void imprimirFormato(int seconds) {
 
